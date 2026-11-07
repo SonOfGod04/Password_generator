@@ -1,63 +1,47 @@
-#!/usr/bin/env python
-# coding: utf-8
+import string
+import unittest
 
-# In[ ]:
-
-
-import random  # random module generate random values
-from tkinter import *  # Importing all required modules from tkinter library
-from tkinter import messagebox  # messagebox module from tkinter is used for showing messages
-import pyperclip  # pyperclip module copy generated password to clipboard
-
-# Creating tkinter window
-gui = Tk()
-gui.title('Password Generator')
-gui.geometry('250x200')
-gui.resizable(0, 0)
-
-# Define colors
-bg_color = '#0077cc'  # Dark blue
-fg_color = '#ffffff'  # White
+from password_core import (
+    AMBIGUOUS, MAX_LENGTH, MIN_LENGTH, SYMBOLS,
+    estimate_entropy_bits, generate_password,
+)
 
 
-# Function to generate password
-def process():
-    length = int(string_pass.get())  # Getting the password length from user input
+class GeneratePasswordTests(unittest.TestCase):
+    def test_length_respected_across_range(self):
+        for n in (MIN_LENGTH, 16, MAX_LENGTH):
+            self.assertEqual(len(generate_password(n)), n)
 
-    # Defining character sets for password generation
-    lower = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-    upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    num = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    special = ['@', '#', '$', '%', '&', '*']
-    all = lower + upper + num + special
+    def test_every_selected_class_present(self):
+        for _ in range(200):
+            pw = generate_password(MIN_LENGTH)
+            self.assertTrue(any(c in string.ascii_lowercase for c in pw))
+            self.assertTrue(any(c in string.ascii_uppercase for c in pw))
+            self.assertTrue(any(c in string.digits for c in pw))
+            self.assertTrue(any(c in SYMBOLS for c in pw))
 
-    # Generating random password using selected characters
-    ran = random.sample(all, length)
-    password = "".join(ran)
+    def test_unselected_classes_absent(self):
+        pw = generate_password(64, upper=False, symbols=False)
+        self.assertTrue(set(pw) <= set(string.ascii_lowercase + string.digits))
 
-    # Displaying generated password in a message box and copying it to clipboard
-    messagebox.showinfo('Result', 'Your password {} \n\nPassword copied to clipboard'.format(password))
-    pyperclip.copy(password)
+    def test_ambiguous_excluded(self):
+        for _ in range(100):
+            self.assertFalse(set(generate_password(64, exclude_ambiguous=True)) & AMBIGUOUS)
 
-# Creating a string variable to hold the password length entered by user
-string_pass = StringVar()
+    def test_invalid_input(self):
+        for bad in (MIN_LENGTH - 1, MAX_LENGTH + 1, "12", 12.5, True):
+            with self.assertRaises(ValueError):
+                generate_password(bad)
+        with self.assertRaises(ValueError):
+            generate_password(16, lower=False, upper=False, digits=False, symbols=False)
 
-# Adding background color to tkinter window 
-gui.configure(bg=bg_color)
+    def test_passwords_differ(self):
+        self.assertEqual(len({generate_password(20) for _ in range(500)}), 500)
 
-# Creating label and entry field for password length input
-label = Label(gui, text="Password Length", bg=bg_color, fg=fg_color).pack(pady=10)
-txt = Entry(gui, textvariable=string_pass).pack()
-
-# Creating button to trigger password generation process
-btn = Button(gui, text="Generate", command=process, bg=bg_color, fg=fg_color).pack(pady=10)
-
-# Running the tkinter event loop
-gui.mainloop()
-
-
-# In[ ]:
+    def test_entropy(self):
+        self.assertAlmostEqual(estimate_entropy_bits(10, upper=False, symbols=False, digits=False),
+                               10 * 4.700439718, places=3)
 
 
-
-
+if __name__ == "__main__":
+    unittest.main()
