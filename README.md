@@ -1,7 +1,6 @@
 # Password_generator
 Easily generate new password that cannot be easily guessed.
 ![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(92).png)
-# Password Generator
 
 ![CI](https://github.com/SonOfGod04/password-generator/actions/workflows/ci.yml/badge.svg)
 
