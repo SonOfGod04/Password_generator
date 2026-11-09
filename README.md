@@ -2,8 +2,6 @@
 Easily generate new password that cannot be easily guessed.
 ![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(92).png)
 
-![CI](https://github.com/SonOfGod04/password-generator/actions/workflows/ci.yml/badge.svg)
-
 A small desktop app that generates strong random passwords. It is built with Tkinter and has no third-party dependencies.
 
 The generation logic lives in its own module (`password_core.py`), so you can use it without the GUI.
@@ -63,6 +61,8 @@ Options (all `bool`, all default to `True` except `exclude_ambiguous`): `lower`,
 
 `generate_password` raises `ValueError` if the length is out of range or no character type is selected.
 
+
+![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(95).png)
 ## Running the tests
 
 ```bash
@@ -95,6 +95,5 @@ test_password_generator.py   Unit tests for the core module
 ## Contributing
 
 Issues and pull requests are welcome. Please run the tests before opening a PR.
-![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(95).png)
 ![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(96).png)
 
