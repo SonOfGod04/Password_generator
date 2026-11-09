@@ -95,5 +95,4 @@ test_password_generator.py   Unit tests for the core module
 ## Contributing
 
 Issues and pull requests are welcome. Please run the tests before opening a PR.
-![pass1](https://github.com/SonOfGod04/Password_generator/blob/main/Screenshot%20(96).png)
 
